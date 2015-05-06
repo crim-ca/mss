@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <script type="text/javascript">
+        var host = get_host();
+
+        function get_host() {
+            var idx = document.URL.indexOf("/tryme");
+            return document.URL.substr(0, idx);
+        }
+
+        function upload() {
+            var formData = new FormData();
+            file = document.getElementById("file2upload").files[0]
+            file_size = file.size
+            formData.append("file", file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    obj = JSON.parse(xhr.responseText);
+                    document.getElementById("storage_doc_id_to_download").value= obj.storage_doc_id;
+                    document.getElementById("storage_doc_id_to_stream").value= obj.storage_doc_id;
+                    document.getElementById("upload_progress").value = 0;
+                    document.getElementById("upload_progress").max = 100;
+                    document.getElementById("upload_progress").style.visibility = "hidden";
+                    document.getElementById("user_msg").innerHTML = "";
+                }
+            }
+            xhr.upload.addEventListener("progress", function (evt) {
+                if (evt.lengthComputable) {
+                    var progress = Math.ceil(evt.loaded * 100 / file_size);
+                    if (progress > 99) {
+                        document.getElementById("user_msg").style.verticalAlign="bottom";
+                        document.getElementById("user_msg").innerHTML = "Uploading to Swift server...";
+                        document.getElementById("upload_progress").removeAttribute("value");
+                        document.getElementById("upload_progress").removeAttribute("max");
+                    } else {
+                        document.getElementById("upload_progress").value = progress;
+                    }
+                }
+            }, false);
+
+            document.getElementById("upload_progress").style.visibility = "visible";
+            xhr.open("POST", host + "/add");
+            xhr.send(formData);
+        }
+        function update_stream() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4) {
+                    obj = JSON.parse(xhr.responseText);
+                    document.getElementById("temp_url").value= obj.stream_url;
+                    var video = document.getElementById("video_player");
+                    video.setAttribute("src", obj.stream_url);
+                    video.play();
+                }
+            }
+            xhr.open("GET", host + "/stream/" + document.getElementById("storage_doc_id_to_stream").value);
+            xhr.send();
+        }
+        function get_download_url() {
+            return host + "/get/" + document.getElementById("storage_doc_id_to_download").value;
+        }
+    </script>
+
+    <h2>Multimedia Storage Service</h2>
+    <h3>Management</h3>
+
+    <input type=file style="width: 504px" id="file2upload" name=file>
+    <button style="width: 132px" onclick="upload();">Upload</button>
+    <br>
+
+    <progress id="upload_progress" value="0" max="100" style="width: 640px; visibility: hidden;"></progress>
+    <div id="user_msg" style="height: 30px;"></div>
+
+    <form name="download" action="" onSubmit="this.action=get_download_url();">
+    <input type="text" style="width: 500px" id="storage_doc_id_to_download" name="storage_doc_id">
+    <button style="width: 132px">Download</button>
+    </form>
+		
+	<input type="text" style="width: 500px" id="storage_doc_id_to_stream" name="storage_doc_id">
+    <button style="width: 132px" onclick="update_stream();">Get stream url</button>
+    
+    <h3>Player</h3>
+    <video id="video_player" width="640" height="480" controls src=""></video>
+    <textarea rows="4" cols="59" style="width: 640px" id="temp_url" name="temp_url"></textarea>
+{% endblock %}
