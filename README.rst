@@ -1,3 +1,7 @@
+==============================
+NEP-143-3 Stockage de fichiers
+==============================
+
 
 This package offers a multimedia file storage system residing behind a REST API. 
 
@@ -14,6 +18,14 @@ and `RabbitMQ <http://www.rabbitmq.com/>`_ messaging broker to dispatch
 processing requests. Also, the REST interface uses the `Flask
 <http://flask.pocoo.org/>`_ WEB framework.
 
+-------
+LICENSE
+-------
+
+see https://github.com/crim-ca/mss/tree/master/THIRD_PARTY_LICENSES.rst
+
+
+------------
 Installation
 ------------
 
