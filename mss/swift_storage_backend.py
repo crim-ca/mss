@@ -26,6 +26,17 @@ TEMP_URL_DEFAULT_VALIDITY = MSS_CONFIG['TEMP_URL_DEFAULT_VALIDITY']
 STORAGE_SERVICE_CONTAINER = MSS_CONFIG['STORAGE_SERVICE_CONTAINER']
 SWIFT_CONFIG = MSS_CONFIG['SWIFT']
 
+# Swift credential options to obtain (AUTH_STORAGE and AUTH_TOKEN): 
+# For v2.
+#	"V2_REMOTE", if we need to connect to a machine on the open stack network and call python-swift client there.
+#   "V2_LOCAL", we can call swift auth api from local machine using python-swift client.
+# For v1:
+#   "V1_LOCAL", we can obtain them from from local machine using curl.
+
+SWIFT_AUTHENTIFICATION_OPTIONS = "V2_REMOTE"
+if "SWIFT_AUTHENTIFICATION_OPTIONS" in MSS_CONFIG:
+	SWIFT_AUTHENTIFICATION_OPTIONS = MSS_CONFIG["SWIFT_AUTHENTIFICATION_OPTIONS"]
+
 
 class SwiftToken(object):
     """
@@ -79,50 +90,66 @@ class SwiftStorageBackend(AbstractStorageBackend):
     def __async_renew_swift_token(out, cmd):
         out['cmd_output'] = commands.getstatusoutput(cmd)
 
+	def __get_cmd_for_swift_credentials(swiftAuthOptions):
+	    auth_url = SWIFT_CONFIG['os-auth-url']
+	    tenant = SWIFT_CONFIG['os-tenant-name']
+	    user = SWIFT_CONFIG['os-username']
+	    passwd = SWIFT_CONFIG['os-password']
+
+		if "V2" in swiftAuthOptions:
+		    region = SWIFT_CONFIG['os-region-name']
+
+		    ssh_cmd = ("swift "
+		               "--os-auth-url '{auth_url}' "
+		               "--os-tenant-name '{tenant}' "
+		               "--os-username '{user}' "
+		               "--os-password '{pw}' "
+		               "--os-region-name {region} {cmd}".
+		               format(auth_url=auth_url,
+		                      tenant=tenant,
+		                      user=user,
+		                      pw=passwd,
+		                      region=region,
+		                      cmd='stat -v'))
+
+			if swiftAuthOptions == "V2_REMOTE":
+				cert = os.path.abspath(SWIFT_CONFIG['certificate_filename'])
+				token_user = SWIFT_CONFIG['token_server_user']
+				token_server = SWIFT_CONFIG['token_server']
+				cmd = ('ssh -oStrictHostKeyChecking=no '
+				       '-i {cert} {user}@{server} \"{cmd}\"'.
+				       format(cert=cert,
+				              user=token_user,
+				              server=token_server,
+				              cmd=ssh_cmd))
+			else:
+				cmd = ssh_cmd
+		else:
+			cmd = "swift -A '{auth_url}' -U '{tenant}':'{user}' -K '{pw}' {cmd}".
+				format(auth_url=auth_url,
+	                      tenant=tenant,
+	                      user=user,
+	                      pw=passwd,
+	                      cmd='stat -v'))
+
+	    out = dict()
+	    args = (out, cmd)
+	    thr = threading.Thread(target=self.__async_renew_swift_token,
+	                           args=args)
+	    thr.start()
+	    thr.join(timeout=5)
+	    if thr.is_alive():
+	        msg = ('Timeout occurred renewing swift token\n{cmd}'
+	               .format(cmd='Command:\n{cmd}'.format(cmd=cmd)))
+	        raise SwiftException(msg)
+
+        return out['cmd_output']
+
     def __renew_swift_token(self):
         self.logger.info(u"Renewing swift token")
 
-        auth_url = SWIFT_CONFIG['os-auth-url']
-        tenant = SWIFT_CONFIG['os-tenant-name']
-        user = SWIFT_CONFIG['os-username']
-        passwd = SWIFT_CONFIG['os-password']
-        region = SWIFT_CONFIG['os-region-name']
+		cmd_output = self.__get_cmd_for_swift_credentials(SWIFT_AUTHENTIFICATION_OPTIONS)
 
-        ssh_cmd = ("swift "
-                   "--os-auth-url '{auth_url}' "
-                   "--os-tenant-name '{tenant}' "
-                   "--os-username '{user}' "
-                   "--os-password '{pw}' "
-                   "--os-region-name {region} {cmd}".
-                   format(auth_url=auth_url,
-                          tenant=tenant,
-                          user=user,
-                          pw=passwd,
-                          region=region,
-                          cmd='stat -v'))
-
-        cert = os.path.abspath(SWIFT_CONFIG['certificate_filename'])
-        token_user = SWIFT_CONFIG['token_server_user']
-        token_server = SWIFT_CONFIG['token_server']
-        cmd = ('ssh -oStrictHostKeyChecking=no '
-               '-i {cert} {user}@{server} \"{cmd}\"'.
-               format(cert=cert,
-                      user=token_user,
-                      server=token_server,
-                      cmd=ssh_cmd))
-
-        out = dict()
-        args = (out, cmd)
-        thr = threading.Thread(target=self.__async_renew_swift_token,
-                               args=args)
-        thr.start()
-        thr.join(timeout=5)
-        if thr.is_alive():
-            msg = ('Timeout occurred renewing swift token\n{cmd}'
-                   .format(cmd='Command:\n{cmd}'.format(cmd=cmd)))
-            raise SwiftException(msg)
-
-        cmd_output = out['cmd_output']
         lines = cmd_output[1].split('\n')
         self.token = SwiftToken()
         for line in lines:
