@@ -26,6 +26,10 @@ TEMP_URL_DEFAULT_VALIDITY = MSS_CONFIG['TEMP_URL_DEFAULT_VALIDITY']
 STORAGE_SERVICE_CONTAINER = MSS_CONFIG['STORAGE_SERVICE_CONTAINER']
 SWIFT_CONFIG = MSS_CONFIG['SWIFT']
 
+STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL = None
+if "STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL" in MSS_CONFIG:
+	STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL = MSS_CONFIG['STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL']
+
 # Swift credential options to obtain (AUTH_STORAGE and AUTH_TOKEN): 
 # For v2.
 #    "V2_REMOTE", if we need to connect to a machine on the open stack network and call python-swift client there.
@@ -104,13 +108,13 @@ class SwiftStorageBackend(AbstractStorageBackend):
                        "--os-tenant-name '{tenant}' "
                        "--os-username '{user}' "
                        "--os-password '{pw}' "
-                       "--os-region-name {region} {cmd}".
+                       "--os-region-name {region} {swift_cmd}".
                        format(auth_url=auth_url,
                               tenant=tenant,
                               user=user,
                               pw=passwd,
                               region=region,
-                              cmd='stat -v'))
+                              swift_cmd='stat -v'))
 
             if swiftAuthOptions == "V2_REMOTE":
                 cert = os.path.abspath(SWIFT_CONFIG['certificate_filename'])
@@ -125,13 +129,14 @@ class SwiftStorageBackend(AbstractStorageBackend):
             else:
                 cmd = ssh_cmd
         else:
-            cmd = ("swift -A '{auth_url}' -U '{tenant}':'{user}' -K '{pw}' \"{cmd}\"".
+            cmd = ("swift -A '{auth_url}' -U '{tenant}':'{user}' -K '{pw}' {swift_cmd}".
                   format(auth_url=auth_url,
                           tenant=tenant,
                           user=user,
                           pw=passwd,
-                          cmd='stat -v'))
+                          swift_cmd='stat -v'))
 
+        self.logger.debug(cmd)
         out = dict()
         args = (out, cmd)
         thr = threading.Thread(target=self.__async_renew_swift_token,
@@ -149,7 +154,8 @@ class SwiftStorageBackend(AbstractStorageBackend):
         self.logger.info(u"Renewing swift token")
 
         cmd_output = self.__get_cmd_for_swift_credentials(SWIFT_AUTHENTIFICATION_OPTIONS)
-
+        if "Unauthorized" in cmd_output[1]:
+            raise SwiftException(cmd_output[1])
         lines = cmd_output[1].split('\n')
         self.token = SwiftToken()
         for line in lines:
@@ -281,19 +287,29 @@ class SwiftStorageBackend(AbstractStorageBackend):
         return deleted_files
 
     def get_temp_url(self, filename, method='GET',
-                     validity_in_secs=TEMP_URL_DEFAULT_VALIDITY):
+                     validity_in_secs=TEMP_URL_DEFAULT_VALIDITY, ignore_prefix=STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL):
 
         expires = int(time() + validity_in_secs)
         storage_url_parts = self.__get_token().storage_url.split('/', 3)
+        self.logger.debug(storage_url_parts)
         path = ('/{url}/{container}/{fn}'.
                 format(url=storage_url_parts[3],
                        container=STORAGE_SERVICE_CONTAINER,
                        fn=filename))
 
+        self.logger.debug("Temp url path {path}".format(path=path))
         # hmac_body = '%s\n%s\n%s' % (method, expires, path)
-        hmac_body = '{method}\n{exp}\n{path}'.format(method=method,
+        
+        encode_path = path
+
+        self.logger.debug("Encode {ignore_prefix}".format(ignore_prefix=ignore_prefix))
+        if ignore_prefix != None and encode_path.startswith(ignore_prefix): 
+            encode_path = encode_path[len(ignore_prefix):]
+		
+        self.logger.debug("Encode {encode_path}".format(encode_path=encode_path))
+        hmac_body = '{method}\n{exp}\n{encode_path}'.format(method=method,
                                                      exp=expires,
-                                                     path=path)
+                                                     encode_path=encode_path)
 
         sig = hmac.new(self.temp_key, hmac_body, sha1).hexdigest()
 
@@ -303,4 +319,5 @@ class SwiftStorageBackend(AbstractStorageBackend):
                            container=STORAGE_SERVICE_CONTAINER,
                            fn=filename))
         temp_url = '{base_url}?{args}'.format(base_url=base_url, args=args)
+        self.logger.debug("Temp url path {temp_url}".format(temp_url=temp_url))
         return temp_url
