@@ -183,7 +183,7 @@ def transcode(storage_doc_id=None):
     task_misc_data = {'upload_url': upload_url,
                       'thumbnail_timecode': thumbnail_timecode}
 
-    return submit_task(storage_doc_id, 'transcoder', misc=task_misc_data)
+    return submit_task(storage_doc_id, 'transcoder',service_route='transcoder', misc=task_misc_data)
 
 
 @APP.route("/<any(status,cancel):task>")
