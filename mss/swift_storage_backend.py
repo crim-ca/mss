@@ -41,6 +41,9 @@ SWIFT_AUTHENTIFICATION_OPTIONS = "V2_REMOTE"
 if "SWIFT_AUTHENTIFICATION_OPTIONS" in MSS_CONFIG:
     SWIFT_AUTHENTIFICATION_OPTIONS = MSS_CONFIG["SWIFT_AUTHENTIFICATION_OPTIONS"]
 
+SWIFT_REDIRECT_URL = None
+if "SWIFT_REDIRECT_URL" in MSS_CONFIG:
+    SWIFT_REDIRECT_URL = MSS_CONFIG["SWIFT_REDIRECT_URL"]
 
 class SwiftToken(object):
     """
@@ -287,7 +290,7 @@ class SwiftStorageBackend(AbstractStorageBackend):
         return deleted_files
 
     def get_temp_url(self, filename, method='GET',
-                     validity_in_secs=TEMP_URL_DEFAULT_VALIDITY, ignore_prefix=STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL):
+                     validity_in_secs=TEMP_URL_DEFAULT_VALIDITY, ignore_prefix=STORAGE_URL_IGNORE_PREFIX_FOR_TEMP_URL,redirect_url=SWIFT_REDIRECT_URL):
 
         expires = int(time() + validity_in_secs)
         storage_url_parts = self.__get_token().storage_url.split('/', 3)
@@ -314,8 +317,11 @@ class SwiftStorageBackend(AbstractStorageBackend):
         sig = hmac.new(self.temp_key, hmac_body, sha1).hexdigest()
 
         args = 'temp_url_sig={0}&temp_url_expires={1}'.format(sig, expires)
+        storageUrl = self.__get_token().storage_url
+        if redirect_url:
+            storageUrl=('{redirect_url}/{extra}').format(redirect_url=redirect_url,extra=storage_url_parts[3])
         base_url = ('{url}/{container}/{fn}'.
-                    format(url=self.__get_token().storage_url,
+                    format(url=storageUrl,
                            container=STORAGE_SERVICE_CONTAINER,
                            fn=filename))
         temp_url = '{base_url}?{args}'.format(base_url=base_url, args=args)

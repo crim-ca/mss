@@ -178,12 +178,12 @@ def transcode(storage_doc_id=None):
     logger.info(u"Received a transcoding request for {i}".
                 format(i=storage_doc_id))
 
-    upload_url = get_request_url('POST_ANNOTATIONS_REQ_URL',
+    upload_url = get_request_url('POST_STORAGE_DOC_REQ_URL',
                                  {'storage_doc_id': storage_doc_id})
     task_misc_data = {'upload_url': upload_url,
                       'thumbnail_timecode': thumbnail_timecode}
 
-    return submit_task(storage_doc_id, 'transcode', misc=task_misc_data)
+    return submit_task(storage_doc_id, 'transcoder', misc=task_misc_data)
 
 
 @APP.route("/<any(status,cancel):task>")
