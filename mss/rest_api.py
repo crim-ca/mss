@@ -18,7 +18,6 @@ REST API and use others modules to do the actual job. It also plays the role of
 formatting any response that should be sent back in the proper format.
 """
 
-
 # -- Standard lib ------------------------------------------------------------
 import tempfile
 import logging
@@ -30,6 +29,7 @@ from flask import jsonify
 import jinja2
 
 # -- Project specific --------------------------------------------------------
+from .VestaRestPackage.request_authorisation import validate_authorisation
 from .VestaRestPackage.generic_rest_api import configure_home_route
 from .VestaRestPackage.utility_rest import MissingParameterError
 from .VestaRestPackage.utility_rest import get_request_url
@@ -38,8 +38,10 @@ from .VestaRestPackage.utility_rest import submit_task
 from .VestaRestPackage.utility_rest import log_request
 from .VestaRestPackage.utility_rest import uuid_task
 from .VestaRestPackage.generic_rest_api import APP
-from .VestaRestPackage.jwt_ import validate_token
 from .exceptions import InvalidConfiguration
+
+
+# TODO : Re-work the restfulness aspect of this HTTP API.
 
 # The SSM service name is in config file and should be the only one
 if len(APP.config['WORKER_SERVICES'].keys()) != 1:
@@ -65,8 +67,10 @@ APP.jinja_loader = TEMPLATES_LOADER
 STORAGE_BACKEND = SwiftStorageBackend()
 
 
-@APP.route("/add", methods=['POST', 'GET'])
-def add():
+@APP.route("/add/<worker_autorization_key>", methods=['POST', 'GET'])
+@APP.route("/add", defaults={'worker_autorization_key': None},
+           methods=['POST', 'GET'])
+def add(worker_autorization_key):
     """
     POST a new file to add into the storage server (file:form-data)
     GET a temporary public URL from swift to upload a file.
@@ -79,10 +83,8 @@ def add():
     """
     logger = logging.getLogger(__name__)
 
-    logger.debug(u"Validating token")
-    signed_token = request.headers.get('Authorization')
-    logger.debug(u"Request headers are : {0}".format(request.headers))
-    validate_token(signed_token)
+    sec = APP.config["SECURITY"]
+    validate_authorisation(request, sec, worker_autorization_key)
 
     if request.method == 'POST':
 
@@ -136,6 +138,21 @@ def add():
         return jsonify({'storage_doc_id': filename, 'upload_url': upload_url})
 
 
+@APP.route("/delete/<storage_doc_id>", methods=['POST'])
+def delete(storage_doc_id):
+    """
+    POST a delete request for a given document.
+
+    :param storage_doc_id: The unique document id of the file to delete.
+    """
+    logger = logging.getLogger(__name__)
+    log_request(SERVICE_NAME,
+                '/delete : Delete file : {0}'.format(storage_doc_id))
+    logger.info(u"Deleting file with id %s", storage_doc_id)
+    STORAGE_BACKEND.delete(storage_doc_id)
+    return jsonify({'deleted': True})
+
+
 @APP.route("/get/<storage_doc_id>")
 def get(storage_doc_id):
     """
@@ -155,19 +172,16 @@ def get(storage_doc_id):
 @APP.route("/transcode/<storage_doc_id>", methods=['POST'])
 def transcode(storage_doc_id=None):
     """
-    POST a transcoding request through a form
+    POST a transcoding request through a form.
 
     :param storage_doc_id: The unique document id of the file to transcode.
-                           If not provide a doc_url parameter
-                           must be submitted in the request
+                           If not provided, a doc_url parameter must be
+                           submitted in the request.
     :returns: JSON object with the task uuid or error response.
     """
     logger = logging.getLogger(__name__)
 
-    logger.debug(u"Validating token")
-    signed_token = request.headers.get('Authorization')
-    logger.debug(u"Request headers are : {0}".format(request.headers))
-    validate_token(signed_token)
+    validate_authorisation(request, APP.config["SECURITY"])
 
     # request.values combines values from args and form
     if 'thumbnail_timecode' in request.values:
@@ -183,7 +197,11 @@ def transcode(storage_doc_id=None):
     task_misc_data = {'upload_url': upload_url,
                       'thumbnail_timecode': thumbnail_timecode}
 
-    return submit_task(storage_doc_id, 'transcoder',service_route='transcoder', misc=task_misc_data)
+    logger.debug("misc_data is : %s", task_misc_data)
+    return submit_task(storage_doc_id,
+                       'transcoder',
+                       service_route=SERVICE_NAME,
+                       misc=task_misc_data)
 
 
 @APP.route("/<any(status,cancel):task>")
@@ -196,7 +214,7 @@ def uuid_task_route(task):
     """
     logger = logging.getLogger(__name__)
     logger.info(u"Got {t} request".format(t=task))
-    return uuid_task(task)
+    return uuid_task(task, SERVICE_NAME)
 
 
 @APP.route("/stream/<storage_doc_id>")

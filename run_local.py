@@ -18,7 +18,7 @@ from mss.rest_api import (configure_home_route, APP)
 from mss.__meta__ import __version__
 
 if __name__ == '__main__':
-    LOG_CONF_FN = os.path.join(THIS_DIR, 'mss', 'logging.ini')
+    LOG_CONF_FN = os.path.join(THIS_DIR, 'mss', 'logging.conf')
 
     PARSER = optparse.OptionParser(version=__version__)
 
