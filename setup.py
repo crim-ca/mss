@@ -5,6 +5,8 @@
 Setuptools configuration script.
 """
 
+from mss.__meta__ import __version__, __author__, __contact__
+
 try:
     from setuptools import setup
 except ImportError:
@@ -14,17 +16,10 @@ with open('README.rst') as readme_file:
     README = readme_file.read()
     DESC = README.split('\n')[0]
 
-with open('RELEASE_NOTES.rst') as history_file:
+with open('HISTORY.rst') as history_file:
     HISTORY = history_file.read().replace('.. :changelog:', '')
 
-from mss.__meta__ import __version__, __author__, __contact__
-
-REQUIREMENTS = ["Flask==0.10.1",
-                "Sphinx==1.2.2",
-                "Werkzeug==0.9.4",
-                "celery==3.1.15",
-                "requests==2.6",
-                "PyJWT==0.4.3"]
+REQUIREMENTS = ['VestaRestPackage==1.7.1']
 
 setup(
     # -- Meta information --------------------------------------------------
@@ -46,9 +41,7 @@ setup(
     ],
 
     # -- Package structure -------------------------------------------------
-    packages=['mss',
-              'mss.VestaRestPackage',
-              'mss.VestaRestPackage.Service'],
+    packages=['mss'],
 
     install_requires=REQUIREMENTS,
     zip_safe=False,
@@ -56,14 +49,6 @@ setup(
     exclude_package_data={'mss': ['.hg', '.hglf']},
 
     package_data={
-        'mss': ['static/*', 'templates/service/*'],
-        'mss.VestaRestPackage':
-            ['static/*', 'templates/*', 'test_data/*'],
-        },
-
-    entry_points={
-        'console_scripts':
-            ['vlb_default_config='
-             'mss.VestaRestPackage.'
-             'print_example_configuration:main']}
+        'mss': ['static/*', 'templates/service/*']
+        }
     )

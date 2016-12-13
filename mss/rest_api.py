@@ -44,10 +44,10 @@ from .exceptions import InvalidConfiguration
 # TODO : Re-work the restfulness aspect of this HTTP API.
 
 # The SSM service name is in config file and should be the only one
-if len(APP.config['WORKER_SERVICES'].keys()) != 1:
-    raise InvalidConfiguration('There should be one and only one service '
-                               'configured for the MSS which is Transcoding. '
-                               '(Incomplete configuration?)')
+# if len(APP.config['WORKER_SERVICES'].keys()) != 1:
+#     raise InvalidConfiguration('There should be one and only one service '
+#                                'configured for the MSS which is Transcoding. '
+#                                '(Incomplete configuration?)')
 
 SERVICE_NAME = APP.config['WORKER_SERVICES'].keys()[0]
 
@@ -72,10 +72,12 @@ STORAGE_BACKEND = SwiftStorageBackend()
            methods=['POST', 'GET'])
 def add(worker_autorization_key):
     """
-    POST a new file to add into the storage server (file:form-data)
+    POST a new file to add into the storage server (file\:form-data)
     GET a temporary public URL from swift to upload a file.
-        The file name must be provided as parameter
-        (ex.: /add?filename=name.ext )
+
+    The file name must be provided as parameter, for example::
+    
+       /add?filename=name.ext
 
     :returns: [POST] JSON object with the unique URL of the file.
               [GET] JSON object with the unique URL of the file
