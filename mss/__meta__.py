@@ -2,9 +2,6 @@
 Meta values for package.
 """
 
-from .VestaRestPackage import __meta__
-
 __version__ = '1.7.0'
-__meta__.API_VERSION = __version__  # Override API_VERSION
-__author__ = __meta__.__author__
-__contact__ = __meta__.__contact__
+__author__ = "osterrfr@crim.ca"
+__contact__ = "osterrfr@crim.ca"

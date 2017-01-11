@@ -25,9 +25,9 @@ RUN cd /tmp/install/netifaces/netifaces-0.10.4 &&\
 
 # Install application -----------------------------------------
 
-RUN pip install .
+COPY . /var/local/src/MSS
 
-ENV VRP_CONFIGURATION /opt/mss/config.py
+RUN pip install /var/local/src/MSS
 
 RUN mkdir -p /opt/mss
 
