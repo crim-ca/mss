@@ -1,42 +1,37 @@
-FROM centos:6.6
+FROM python:2.7-alpine
+MAINTAINER frederic.osterrath@crim.ca
 
-# Install required libraries -------------------------------
-RUN rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-RUN yum install -y \
-    hg \
-    python2-devel \
-    gcc \
-    python-pip \
-    wget \
-    tar
+RUN apk update &&\
+    apk add build-base\
+            linux-headers\
+            bash &&\
+    pip install pbr==1.8.0\
+                python-keystoneclient==1.7.1\
+                python-swiftclient==2.6.0\
+                gunicorn==19.3.0 &&\
+    pip install mercurial==3.4 &&\
+    apk del build-base\
+            linux-headers
 
-# Libabries missing from the base CentOS install ---------------
-RUN mkdir -p /tmp/install/netifaces/
+# Thanks to a bug in pbr, this is the only way to expose its version to swift.
+ENV PBR_VERSION 1.8.0
 
-RUN cd /tmp/install/netifaces &&\
-    wget -O "netifaces-0.10.4.tar.gz"\
-        "https://pypi.python.org/packages/source/n/netifaces/netifaces-0.10.4.tar.gz#md5=36da76e2cfadd24cc7510c2c0012eb1e"
+# App
+COPY . /usr/local/src/mss
+RUN pip install /usr/local/src/mss gunicorn
 
-RUN cd /tmp/install/netifaces/ &&\
-    tar xvzf netifaces-0.10.4.tar.gz
-
-RUN cd /tmp/install/netifaces/netifaces-0.10.4 &&\
-    python setup.py install
-
-# Install application -----------------------------------------
-
-COPY . /var/local/src/MSS
-
-RUN pip install /var/local/src/MSS gunicorn
-
+RUN mkdir -p /data
 RUN mkdir -p /opt/mss
 
-COPY deployment/mss_startup.sh /opt/mss/mss_startup.sh
+COPY deployment/conf.py /opt/mss/config.py
 COPY logging.conf /opt/mss/logging.conf
+
+ENV VRP_CONFIGURATION /opt/mss/config.py
+
+COPY deployment/mss_startup.sh /opt/mss/mss_startup.sh
 RUN chmod +x /opt/mss/mss_startup.sh
 
 EXPOSE 5000
 
 WORKDIR /opt/mss
-
 CMD ["./mss_startup.sh"]
