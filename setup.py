@@ -19,7 +19,7 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     HISTORY = history_file.read().replace('.. :changelog:', '')
 
-REQUIREMENTS = ['VestaRestPackage==1.7.1']
+REQUIREMENTS = ['VestaRestPackage==1.7.4']
 
 setup(
     # -- Meta information --------------------------------------------------

@@ -24,21 +24,20 @@ import logging
 import os
 
 # -- 3rd party ---------------------------------------------------------------
+from VestaRestPackage.request_authorisation import validate_authorisation
+from VestaRestPackage.generic_rest_api import configure_home_route
+from VestaRestPackage.utility_rest import MissingParameterError
+from VestaRestPackage.utility_rest import get_request_url
+from VestaRestPackage.utility_rest import submit_task
+from VestaRestPackage.utility_rest import log_request
+from VestaRestPackage.utility_rest import uuid_task
+from VestaRestPackage.generic_rest_api import APP
 from flask import request
 from flask import jsonify
 import jinja2
 
 # -- Project specific --------------------------------------------------------
-from .VestaRestPackage.request_authorisation import validate_authorisation
-from .VestaRestPackage.generic_rest_api import configure_home_route
-from .VestaRestPackage.utility_rest import MissingParameterError
-from .VestaRestPackage.utility_rest import get_request_url
 from .swift_storage_backend import SwiftStorageBackend
-from .VestaRestPackage.utility_rest import submit_task
-from .VestaRestPackage.utility_rest import log_request
-from .VestaRestPackage.utility_rest import uuid_task
-from .VestaRestPackage.generic_rest_api import APP
-from .exceptions import InvalidConfiguration
 
 
 # TODO : Re-work the restfulness aspect of this HTTP API.
@@ -46,8 +45,8 @@ from .exceptions import InvalidConfiguration
 # The SSM service name is in config file and should be the only one
 # if len(APP.config['WORKER_SERVICES'].keys()) != 1:
 #     raise InvalidConfiguration('There should be one and only one service '
-#                                'configured for the MSS which is Transcoding. '
-#                                '(Incomplete configuration?)')
+#                                'configured for the MSS which is Transcoding.'
+#                                ' (Incomplete configuration?)')
 
 SERVICE_NAME = APP.config['WORKER_SERVICES'].keys()[0]
 
@@ -76,7 +75,7 @@ def add(worker_autorization_key):
     GET a temporary public URL from swift to upload a file.
 
     The file name must be provided as parameter, for example::
-    
+
        /add?filename=name.ext
 
     :returns: [POST] JSON object with the unique URL of the file.

@@ -12,12 +12,12 @@ import re
 import os
 
 # -- 3rd party ---------------------------------------------------------------
+from VestaRestPackage.app_objects import APP
 from flask import redirect
 import requests
 
 # -- Project specific --------------------------------------------------------
 from .abstract_storage_backend import AbstractStorageBackend
-from .VestaRestPackage.app_objects import APP
 from .exceptions import SwiftException
 
 MSS_CONFIG = APP.config['MSS']

@@ -27,11 +27,12 @@ RUN cd /tmp/install/netifaces/netifaces-0.10.4 &&\
 
 COPY . /var/local/src/MSS
 
-RUN pip install /var/local/src/MSS
+RUN pip install /var/local/src/MSS gunicorn
 
 RUN mkdir -p /opt/mss
 
-COPY mss_startup.sh /opt/mss/mss_startup.sh
+COPY deployment/mss_startup.sh /opt/mss/mss_startup.sh
+COPY logging.conf /opt/mss/logging.conf
 RUN chmod +x /opt/mss/mss_startup.sh
 
 EXPOSE 5000
