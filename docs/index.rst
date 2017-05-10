@@ -23,6 +23,7 @@ Package information
    :maxdepth: 2
 
    install
+   configuration
    authors
    license
    provenance
@@ -53,6 +54,26 @@ Package level
    :glob:
 
    src/*
+
+
+«REST API package» sub-package level
+++++++++++++++++++++++++++++++++++++
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   src/VRP/*
+
+
+«Service» sub-package level
++++++++++++++++++++++++++++
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+
+   src/VRP/Service/*
 
 
 Indices and tables

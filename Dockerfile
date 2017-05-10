@@ -28,10 +28,10 @@ COPY logging.conf /opt/mss/logging.conf
 
 ENV VRP_CONFIGURATION /opt/mss/config.py
 
+COPY deployment/mss_startup.sh /opt/mss/mss_startup.sh
+RUN chmod +x /opt/mss/mss_startup.sh
+
 EXPOSE 5000
 
 WORKDIR /opt/mss
-
-RUN python -m mss.init_swift_container
-
-CMD ["gunicorn", "-w", "4", "-preload", "-b", "0.0.0.0:5000", "mss.rest_api:APP", "--log-config=logging.conf"]
+CMD ["./mss_startup.sh"]
