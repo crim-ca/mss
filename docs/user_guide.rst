@@ -18,7 +18,7 @@ It shows how a service can be used, the standard response types
 and how to handle exceptions.
 
 .. overview ---------------------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_overview.rst
+.. include:: ../../VestaRestPackage/docs/ug_overview.inc
 
 Methods
 -------
@@ -28,7 +28,7 @@ control Service workers, including the basic routes required by the CANARIE
 Service API.
 
 The Multimedia Storage Service builds on top of these methods and offers more
-specific functionalities for it's purposes. 
+specific functionalities for it's purposes.
 
 
 
@@ -83,7 +83,7 @@ can be used to upload the document directly to the file server such as:
 .. code-block:: json
 
    {
-       "storage_doc_id": "5hEK1ToPWHVhE3Irje5KRq.avi", 
+       "storage_doc_id": "5hEK1ToPWHVhE3Irje5KRq.avi",
        "upload_url":"https://swift-qc.dair-atir.canarie.ca:8080/v1/AUTH_054956644df74c3b988ecfdb115a145c/VestaServiceStorageMultimedia/5hEK1ToPWHVhE3Irje5KRq.avi?temp_url_sig=41cbdc78cddf0418821331515871a7a61b9b2137&temp_url_expires=1410465382"
    }
 
@@ -155,7 +155,7 @@ Example of requests with the curl utility:
 delete
 ~~~~~~
 
-To delete a document. 
+To delete a document.
 
 This method uses HTTP POST.
 
@@ -163,7 +163,7 @@ This method uses HTTP POST.
 Parameters:
 
 :storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+   <add_method>`.
 
 
 Return value:
@@ -186,13 +186,13 @@ get
 
 To download a document.
 
-This method uses HTTP GET. 
+This method uses HTTP GET.
 
 
 Parameters:
 
 :storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+   <add_method>`.
 
 
 Return value:
@@ -215,13 +215,13 @@ stream
 
 To obtain a URL from which the video can be streamed directly.
 
-This method uses HTTP GET. 
+This method uses HTTP GET.
 
 
 Parameters:
 
 :storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+   <add_method>`.
 
 
 Return value:
@@ -250,12 +250,12 @@ transcode
 
 To start a document transcoding into various formats required by the platform.
 
-This method uses HTTP POST. 
+This method uses HTTP POST.
 
 
 Parameters:
 
-:storage_doc_id: The document identifier returned by the add method. 
+:storage_doc_id: The document identifier returned by the add method.
 :thumbnail_timecode: Optional parameter. If given, the process will
    generate 2 thumbnails of different sizes in JPG format. Set the parameter to
    a floating value in seconds representing the offset in the video stream from
@@ -319,7 +319,7 @@ also returned:
        "stream_hd": "6093pv5xWaZbAi7n7U1BJ3.mp4",
        "stream_sd": "3uLpIq7UaNPQ3FCZC3hP4G.mp4",
        "thumbnail": "4K8xYsVuNC95xd8BGwEHwE.jpg",
-       "length": "10.043367", 
+       "length": "10.043367",
        "framerate": "29.97002997"
    }
 
@@ -351,36 +351,37 @@ Examples:
 
 
 .. cancel method -------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_cancel_method.rst
+.. include:: ../../VestaRestPackage/docs/ug_cancel_method.inc
 
 
 .. Info route ----------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_info_route.rst
+.. include:: ../../VestaRestPackage/docs/ug_info_route.inc
 
 
 .. Status method -------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_status_method.rst
+.. include:: ../../VestaRestPackage/docs/ug_status_method.inc
 
 
 .. CANARIE API ---------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_canarie_api.rst
+.. include:: ../../VestaRestPackage/docs/ug_canarie_api.inc
 
 
 .. Error codes section ===========================================
-.. include:: ../mss/VestaRestPackage/docs/ug_error_codes_preamble.rst
+.. include:: ../../VestaRestPackage/docs/ug_error_codes_preamble.inc
 
 
 .. Core error codes ----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_core_error_codes.rst
+.. include:: ../../VestaRestPackage/docs/ug_core_error_codes.inc
 
 
 .. VRP error codes -----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_vrp_error_codes.rst
+.. include:: ../../VestaRestPackage/docs/ug_vrp_error_codes.inc
 
 
 .. Service error codes -------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_worker_services_error_codes.rst
+.. include:: ../../VestaRestPackage/docs/ug_worker_services_error_codes.inc
 
 
 .. MSS error codes -----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_mss_error_codes.rst
+.. include:: ./ug_mss_error_codes.rst
+
