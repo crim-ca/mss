@@ -27,10 +27,7 @@ import os
 from VestaRestPackage.request_authorisation import validate_authorisation
 from VestaRestPackage.generic_rest_api import configure_home_route
 from VestaRestPackage.utility_rest import MissingParameterError
-from VestaRestPackage.utility_rest import get_request_url
-from VestaRestPackage.utility_rest import submit_task
 from VestaRestPackage.utility_rest import log_request
-from VestaRestPackage.utility_rest import uuid_task
 from VestaRestPackage.generic_rest_api import APP
 from flask import request
 from flask import jsonify
@@ -167,55 +164,6 @@ def get(storage_doc_id):
 
     logger.info(u"Obtaining file with id {i}".format(i=storage_doc_id))
     return STORAGE_BACKEND.download(storage_doc_id)
-
-
-@APP.route("/transcode", methods=['POST'])
-@APP.route("/transcode/<storage_doc_id>", methods=['POST'])
-def transcode(storage_doc_id=None):
-    """
-    POST a transcoding request through a form.
-
-    :param storage_doc_id: The unique document id of the file to transcode.
-                           If not provided, a doc_url parameter must be
-                           submitted in the request.
-    :returns: JSON object with the task uuid or error response.
-    """
-    logger = logging.getLogger(__name__)
-
-    validate_authorisation(request, APP.config["SECURITY"])
-
-    # request.values combines values from args and form
-    if 'thumbnail_timecode' in request.values:
-        thumbnail_timecode = request.values['thumbnail_timecode']
-    else:
-        thumbnail_timecode = None
-
-    logger.info(u"Received a transcoding request for {i}".
-                format(i=storage_doc_id))
-
-    upload_url = get_request_url('POST_STORAGE_DOC_REQ_URL',
-                                 {'storage_doc_id': storage_doc_id})
-    task_misc_data = {'upload_url': upload_url,
-                      'thumbnail_timecode': thumbnail_timecode}
-
-    logger.debug("misc_data is : %s", task_misc_data)
-    return submit_task(storage_doc_id,
-                       'transcoder',
-                       service_route=SERVICE_NAME,
-                       misc=task_misc_data)
-
-
-@APP.route("/<any(status,cancel):task>")
-def uuid_task_route(task):
-    """
-    Get the status or cancel a task identified by a uuid.
-
-    :param task: status or cancel
-    :returns: JSON object with latest status or error response.
-    """
-    logger = logging.getLogger(__name__)
-    logger.info(u"Got {t} request".format(t=task))
-    return uuid_task(task, SERVICE_NAME)
 
 
 @APP.route("/stream/<storage_doc_id>")
