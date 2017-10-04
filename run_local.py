@@ -11,11 +11,11 @@ import optparse
 import logging
 import os
 
-THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-
 # -- Project specific --------------------------------------------------------
-from mss.rest_api import (configure_home_route, APP)
 from mss.__meta__ import __version__
+from mss.rest_api import APP
+
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 
 if __name__ == '__main__':
     LOG_CONF_FN = os.path.join(THIS_DIR, 'mss', 'logging.conf')
@@ -39,8 +39,5 @@ if __name__ == '__main__':
     LOGGER = logging.getLogger(__name__)
     LOGGER.info("Using log configuration file {c}".
                 format(c=OPTS.logging_conf_fn))
-
-    # Must be configured also once the settings have been loaded
-    configure_home_route()
 
     APP.run(host='0.0.0.0', port=OPTS.port, debug=OPTS.debug)

@@ -25,7 +25,6 @@ import os
 
 # -- 3rd party ---------------------------------------------------------------
 from VestaRestPackage.request_authorisation import validate_authorisation
-from VestaRestPackage.generic_rest_api import configure_home_route
 from VestaRestPackage.utility_rest import MissingParameterError
 from VestaRestPackage.utility_rest import log_request
 from VestaRestPackage.generic_rest_api import APP
@@ -176,7 +175,3 @@ def stream(storage_doc_id):
     return jsonify({'stream_url':
                     STORAGE_BACKEND.get_temp_url(storage_doc_id,
                                                  method='GET')})
-
-
-if __name__ != "__main__":
-    configure_home_route()
