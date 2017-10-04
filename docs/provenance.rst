@@ -1,7 +1,7 @@
 Provenance
 ==========
 
-Who authorizes releases: Stephane Bond (CRIM, DETI team).
+Who authorizes releases: Frederic Osterrath (CRIM, PATX team)
 
 Release validation procedure
 ----------------------------
