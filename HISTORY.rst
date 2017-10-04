@@ -5,6 +5,12 @@ History
 =======
 
 
+1.8.0
+-----
+ 
+* No longer provides transcoding features.
+
+
 1.7.1
 -----
  
