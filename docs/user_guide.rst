@@ -46,7 +46,6 @@ It covers:
 * <Base URI>/delete
 * <Base URI>/get
 * <Base URI>/stream
-* <Base URI>/transcode
 * <Base URI>/status
 
 Where *<Base URI>* will be the server root.
@@ -245,121 +244,8 @@ URL form:
    <Base URI>/stream/<storage_doc_id>
 
 
-transcode
-~~~~~~~~~
-
-To start a document transcoding into various formats required by the platform.
-
-This method uses HTTP POST. 
-
-
-Parameters:
-
-:storage_doc_id: The document identifier returned by the add method. 
-:thumbnail_timecode: Optional parameter. If given, the process will
-   generate 2 thumbnails of different sizes in JPG format. Set the parameter to
-   a floating value in seconds representing the offset in the video stream from
-   which the thumbnails must be extracted. If the offset is outside the video
-   length range, the default value of 5% of the video length will be used.
-
-
-Return value:
-
-The service returns a JSON structure containing a «uuid» identifying the
-transcoding request:
-
-.. code-block:: json
-
-   {
-       "uuid": "6547137e-cc2f-4008-b1eb-4ae8e898ce83"
-   }
-
-The resulting «uuid» can then be used to perform further status queries to the
-service.
-
-
-Examples:
-
-URL form:
-
-.. code-block:: bash
-
-   <Base URI>/transcode/<storage_doc_id>
-   <Base URI>/transcode/<storage_doc_id>?thumbnail_timecode=2.6
-
-
-status
-~~~~~~
-
-To obtain the status or results of a given transcoding request
-
-This method uses HTTP GET.
-
-
-Parameters:
-
-:uuid: The identifier of a previous transcoding request.
-
-
-Return value:
-
-Returns a given response depending on the processing state. Consult the
-:ref:`status_method` page for the documentation of the response format.
-
-For the final SUCCESS state the key «result» will contain a JSON structure with
-an identifier for each of the transcoded documents. Some video properties are
-also returned:
-
-.. code-block:: json
-
-   {
-       "annot_audio": "2tJw6iKqhTtPiSO4smdMRS.wav",
-       "annot_video": "6093pv5xWaZbAi7n7U1BJ3.mp4",
-       "small_thumbnail": "3aJ3SR8FD8Twk8GPYGgKzR.jpg",
-       "stream_hd": "6093pv5xWaZbAi7n7U1BJ3.mp4",
-       "stream_sd": "3uLpIq7UaNPQ3FCZC3hP4G.mp4",
-       "thumbnail": "4K8xYsVuNC95xd8BGwEHwE.jpg",
-       "length": "10.043367", 
-       "framerate": "29.97002997"
-   }
-
-The «stream_sd» and «stream_hd» keys identify videos destined to be streamed.
-The SD version is of a resolution of at most 480p, or lower if the source has a
-smaller definition. The HD version is of a resolution of at most 1080p, or
-lower if the source has a smaller definition and is not available if the source
-has a definition below 480p.
-
-The «annot_audio» and «annot_video» keys identify documents normalized to be
-supported by automatic audio and video annotators services.
-
-The «thumbnail» and «small_thumbnail» keys identify still frames of the source
-respectively having a height of the source and 240px. These two documents only
-exist if the thumbnail_timecode parameter was given.
-
-In the case that the source would not have audio or video streams one or more
-of the previous keys could be missing. For example, it is impossible to extract
-a WAV file from a document having no audio stream.
-
-Finally the «length» and «framerate» are given based on the video stream. The
-«length» will be based on the audio stream and no «framerate» will be given if
-a document with no video stream is given.
-
-
-Examples:
-
-   <Base URI>/status?uuid=6547137e-cc2f-4008-b1eb-4ae8e898ce83
-
-
-.. cancel method -------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_cancel_method.rst
-
-
 .. Info route ----------------------------------------------------
 .. include:: ../mss/VestaRestPackage/docs/ug_info_route.rst
-
-
-.. Status method -------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_status_method.rst
 
 
 .. CANARIE API ---------------------------------------------------

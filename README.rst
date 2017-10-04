@@ -16,8 +16,6 @@ The different functions offered by this code base are the following:
 
 * Provide a unified CANARIE REST interface for a collection of multimedia
   files
-* Provide an asynchronous API to transcode documents through the Celery
-  interface.
 
 The documentation for this project can be found `here
 <http://services.vesta.crim.ca/docs/mss/latest/>`_ .

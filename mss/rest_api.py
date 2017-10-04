@@ -25,12 +25,8 @@ import os
 
 # -- 3rd party ---------------------------------------------------------------
 from VestaRestPackage.request_authorisation import validate_authorisation
-from VestaRestPackage.generic_rest_api import configure_home_route
 from VestaRestPackage.utility_rest import MissingParameterError
-from VestaRestPackage.utility_rest import get_request_url
-from VestaRestPackage.utility_rest import submit_task
 from VestaRestPackage.utility_rest import log_request
-from VestaRestPackage.utility_rest import uuid_task
 from VestaRestPackage.generic_rest_api import APP
 from flask import request
 from flask import jsonify
@@ -47,8 +43,6 @@ from .swift_storage_backend import SwiftStorageBackend
 #     raise InvalidConfiguration('There should be one and only one service '
 #                                'configured for the MSS which is Transcoding.'
 #                                ' (Incomplete configuration?)')
-
-SERVICE_NAME = APP.config['WORKER_SERVICES'].keys()[0]
 
 UPLOAD_FOLDER = tempfile.mkdtemp()
 
@@ -95,8 +89,7 @@ def add(worker_autorization_key):
             ufn = upload_file.filename
             filename = STORAGE_BACKEND.get_unique_filename(ufn)
 
-            log_request(SERVICE_NAME,
-                        '/add : POST file at : {0}'.format(filename))
+            log_request('MSS', '/add : POST file at : {0}'.format(filename))
 
             # TODO : Could be more efficient to use the already existing file
             # held by flask rather than doing a copy here
@@ -132,8 +125,7 @@ def add(worker_autorization_key):
         logger.info(u"Adding file {fn} to storage server".
                     format(fn=rfn))
 
-        log_request(SERVICE_NAME,
-                    '/add : Get temp url to upload at : {0}'.
+        log_request('MSS', '/add : Get temp url to upload at : {0}'.
                     format(filename))
 
         return jsonify({'storage_doc_id': filename, 'upload_url': upload_url})
@@ -147,8 +139,7 @@ def delete(storage_doc_id):
     :param storage_doc_id: The unique document id of the file to delete.
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/delete : Delete file : {0}'.format(storage_doc_id))
+    log_request('MSS', '/delete : Delete file : {0}'.format(storage_doc_id))
     logger.info(u"Deleting file with id %s", storage_doc_id)
     STORAGE_BACKEND.delete(storage_doc_id)
     return jsonify({'deleted': True})
@@ -162,60 +153,10 @@ def get(storage_doc_id):
     :param storage_doc_id: The unique document id of the file to get.
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/get : Download file : {0}'.format(storage_doc_id))
+    log_request('MSS', '/get : Download file : {0}'.format(storage_doc_id))
 
     logger.info(u"Obtaining file with id {i}".format(i=storage_doc_id))
     return STORAGE_BACKEND.download(storage_doc_id)
-
-
-@APP.route("/transcode", methods=['POST'])
-@APP.route("/transcode/<storage_doc_id>", methods=['POST'])
-def transcode(storage_doc_id=None):
-    """
-    POST a transcoding request through a form.
-
-    :param storage_doc_id: The unique document id of the file to transcode.
-                           If not provided, a doc_url parameter must be
-                           submitted in the request.
-    :returns: JSON object with the task uuid or error response.
-    """
-    logger = logging.getLogger(__name__)
-
-    validate_authorisation(request, APP.config["SECURITY"])
-
-    # request.values combines values from args and form
-    if 'thumbnail_timecode' in request.values:
-        thumbnail_timecode = request.values['thumbnail_timecode']
-    else:
-        thumbnail_timecode = None
-
-    logger.info(u"Received a transcoding request for {i}".
-                format(i=storage_doc_id))
-
-    upload_url = get_request_url('POST_STORAGE_DOC_REQ_URL',
-                                 {'storage_doc_id': storage_doc_id})
-    task_misc_data = {'upload_url': upload_url,
-                      'thumbnail_timecode': thumbnail_timecode}
-
-    logger.debug("misc_data is : %s", task_misc_data)
-    return submit_task(storage_doc_id,
-                       'transcoder',
-                       service_route=SERVICE_NAME,
-                       misc=task_misc_data)
-
-
-@APP.route("/<any(status,cancel):task>")
-def uuid_task_route(task):
-    """
-    Get the status or cancel a task identified by a uuid.
-
-    :param task: status or cancel
-    :returns: JSON object with latest status or error response.
-    """
-    logger = logging.getLogger(__name__)
-    logger.info(u"Got {t} request".format(t=task))
-    return uuid_task(task, SERVICE_NAME)
 
 
 @APP.route("/stream/<storage_doc_id>")
@@ -227,15 +168,10 @@ def stream(storage_doc_id):
     :returns: JSON object with a valid URL from which the video can be streamed
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/stream : GET stream url for : {0}'
+    log_request('MSS', '/stream : GET stream url for : {0}'
                 .format(storage_doc_id))
 
     logger.info(u"Got stream request for {i}".format(i=storage_doc_id))
     return jsonify({'stream_url':
                     STORAGE_BACKEND.get_temp_url(storage_doc_id,
                                                  method='GET')})
-
-
-if __name__ != "__main__":
-    configure_home_route()

@@ -22,14 +22,6 @@ DATABASES = {
         'filename': "/data/requests.db",
         'schema_filename': "../static/requests_schema.sql"}}
 
-CELERY = {
-    'BROKER_URL': "amqp://amqp-server//",
-    'CELERY_RESULT_BACKEND': "amqp://",
-    'CELERY_TASK_SERIALIZER': "json",
-    'CELERY_RESULT_SERIALIZER': "json",
-    'CELERY_ACCEPT_CONTENT': ["json"],
-    'CELERY_TASK_RESULT_EXPIRES': 7200}
-
 # Change to internal volume.
 REQUEST_REGISTER_FN = "static/requests.shelve"
 
@@ -51,35 +43,6 @@ SECURITY = {"BYPASS_SECURITY": True}
 # http://132.217.140.31:9995/status?uuid=b1ac8eba-3545-479a-9219-b4004184a2f4
 GET_STORAGE_DOC_REQ_URL = "http://mss/get/{storage_doc_id}"
 POST_STORAGE_DOC_REQ_URL = "http://mss/add"
-
-WORKER_SERVICES = {
-    'transcoder': {
-        'route_keyword': 'transcoder',
-        'celery_task_name': 'transcoder',
-        'celery_queue_name': 'transcoder',
-        'name': 'Transcoder service',
-        'synopsis': "RESTful service providing my_service.",
-        'version': '0.2.8',  # Expected version - will check.
-        'institution': 'My Organisation',
-        'releaseTime': '2015-01-01T00:00:00Z',
-        'supportEmail': 'support@my-organisation.ca',
-        'category': "Data Manipulation",
-        'researchSubject': "My research subject",
-        'tags': "my_service, research",
-        'home': "http://localhost/docs/my_service.html",
-        'doc': "http://localhost/docs/my_service.html",
-        'releasenotes': "http://localhost/docs/my_service.html",
-        'support': "http://localhost/docs/my_service.html",
-        'source': ",204",
-        'tryme': "http://localhost/docs/my_service.html",
-        'licence': "http://localhost/docs/my_service.html",
-        'provenance': "http://localhost/docs/my_service.html",
-        'os_args': {'image': 'transcoder_v_0.2.5',
-                    'instance_type': 'm1.large'},
-        # Process-request to spawn VM ratio
-        'rubber_params': {'spawn_ratio': 0.1}
-    }
-}
 
 MSS = {
     'SWIFT_AUTHENTIFICATION_OPTIONS': 'V1_LOCAL',
