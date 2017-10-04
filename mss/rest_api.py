@@ -45,8 +45,6 @@ from .swift_storage_backend import SwiftStorageBackend
 #                                'configured for the MSS which is Transcoding.'
 #                                ' (Incomplete configuration?)')
 
-SERVICE_NAME = APP.config['WORKER_SERVICES'].keys()[0]
-
 UPLOAD_FOLDER = tempfile.mkdtemp()
 
 APP.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -92,8 +90,7 @@ def add(worker_autorization_key):
             ufn = upload_file.filename
             filename = STORAGE_BACKEND.get_unique_filename(ufn)
 
-            log_request(SERVICE_NAME,
-                        '/add : POST file at : {0}'.format(filename))
+            log_request('MSS', '/add : POST file at : {0}'.format(filename))
 
             # TODO : Could be more efficient to use the already existing file
             # held by flask rather than doing a copy here
@@ -129,8 +126,7 @@ def add(worker_autorization_key):
         logger.info(u"Adding file {fn} to storage server".
                     format(fn=rfn))
 
-        log_request(SERVICE_NAME,
-                    '/add : Get temp url to upload at : {0}'.
+        log_request('MSS', '/add : Get temp url to upload at : {0}'.
                     format(filename))
 
         return jsonify({'storage_doc_id': filename, 'upload_url': upload_url})
@@ -144,8 +140,7 @@ def delete(storage_doc_id):
     :param storage_doc_id: The unique document id of the file to delete.
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/delete : Delete file : {0}'.format(storage_doc_id))
+    log_request('MSS', '/delete : Delete file : {0}'.format(storage_doc_id))
     logger.info(u"Deleting file with id %s", storage_doc_id)
     STORAGE_BACKEND.delete(storage_doc_id)
     return jsonify({'deleted': True})
@@ -159,8 +154,7 @@ def get(storage_doc_id):
     :param storage_doc_id: The unique document id of the file to get.
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/get : Download file : {0}'.format(storage_doc_id))
+    log_request('MSS', '/get : Download file : {0}'.format(storage_doc_id))
 
     logger.info(u"Obtaining file with id {i}".format(i=storage_doc_id))
     return STORAGE_BACKEND.download(storage_doc_id)
@@ -175,8 +169,7 @@ def stream(storage_doc_id):
     :returns: JSON object with a valid URL from which the video can be streamed
     """
     logger = logging.getLogger(__name__)
-    log_request(SERVICE_NAME,
-                '/stream : GET stream url for : {0}'
+    log_request('MSS', '/stream : GET stream url for : {0}'
                 .format(storage_doc_id))
 
     logger.info(u"Got stream request for {i}".format(i=storage_doc_id))
