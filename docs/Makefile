@@ -55,7 +55,7 @@ html:
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
 install: html
-	./sync.py
+	./sync.py --destination vesta_docs:/var/www/html/docs/mss/
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

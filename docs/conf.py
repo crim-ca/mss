@@ -43,7 +43,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The encoding of source files.
-#source_encoding = 'utf-8-sig'
+# source_encoding = 'utf-8-sig'
 
 # The master toctree document.
 master_doc = 'index'
@@ -190,10 +190,10 @@ htmlhelp_basename = 'MultimediaStorageSystemdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     # 'papersize': 'letterpaper',
-    
+
     # The font size ('10pt', '11pt' or '12pt').
     # 'pointsize': '10pt',
-    
+
     # Additional stuff for the LaTeX preamble.
     # 'preamble': '',
 }
@@ -202,7 +202,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    ('index', 'MultimediaStorageSystem.tex', u'Multimedia Storage System Documentation',
+    ('index', 'MultimediaStorageSystem.tex',
+     u'Multimedia Storage System Documentation',
      u'CRIM', 'manual'),
 ]
 
@@ -232,7 +233,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'multimediastoragesystem', u'Multimedia Storage System Documentation',
+    ('index', 'multimediastoragesystem',
+     u'Multimedia Storage System Documentation',
      [u'CRIM'], 1)
 ]
 
@@ -246,7 +248,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'MultimediaStorageSystem', u'Multimedia Storage System Documentation',
+    ('index', 'MultimediaStorageSystem',
+     u'Multimedia Storage System Documentation',
      u'CRIM', 'MultimediaStorageSystem', 'One line description of project.',
      'Miscellaneous'),
 ]
@@ -267,8 +270,6 @@ texinfo_documents = [
 intersphinx_mapping = {'celery':
                        ('http://docs.celeryproject.org/en/latest/',
                         None),
-                       'mss': ('http://services.vesta.crim.ca/docs/mss/latest/',
-                                ('../../MSS/docs/_build/html/objects.inv', None)),
                        'flask': ('http://flask.pocoo.org/docs/0.10/', None),
-                       'jass': ('http://services.vesta.crim.ca/docs/jass/latest/',
-                                ('../../JASS/docs/_build/html/objects.inv', None))}
+                       'jass': ('http://vesta.crim.ca/docs/jass/latest/',
+                                None)}

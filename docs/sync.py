@@ -11,8 +11,7 @@ from shlex import split
 
 from conf import __version__ as VERSION
 
-DOC_DESTINATION = ("centos@services.vesta.crim.ca:"
-                   "/usr/share/nginx/html/docs/mss/")
+DOC_DESTINATION = None
 
 
 def norm_perms():
