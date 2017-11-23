@@ -18,7 +18,8 @@ It shows how a service can be used, the standard response types
 and how to handle exceptions.
 
 .. overview ---------------------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_overview.inc
+See :ref:`Rest interface overview <vrp:user_guide_overview>` for general
+information on the REST interface.
 
 Methods
 -------
@@ -242,31 +243,3 @@ URL form:
 .. code-block:: bash
 
    <Base URI>/stream/<storage_doc_id>
-
-
-.. Info route ----------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_info_route.inc
-
-
-.. CANARIE API ---------------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_canarie_api.inc
-
-
-.. Error codes section ===========================================
-.. include:: ../mss/VestaRestPackage/docs/ug_error_codes_preamble.inc
-
-
-.. Core error codes ----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_core_error_codes.inc
-
-
-.. VRP error codes -----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_vrp_error_codes.inc
-
-
-.. Service error codes -------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_worker_services_error_codes.inc
-
-
-.. MSS error codes -----------------------------------------------
-.. include:: ../mss/VestaRestPackage/docs/ug_mss_error_codes.inc

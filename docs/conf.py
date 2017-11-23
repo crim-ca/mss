@@ -271,5 +271,7 @@ intersphinx_mapping = {'celery':
                        ('http://docs.celeryproject.org/en/latest/',
                         None),
                        'flask': ('http://flask.pocoo.org/docs/0.10/', None),
+                       'vrp': ('http://vesta.crim.ca/docs/vrp/1.7.4/',
+                               None),
                        'jass': ('http://vesta.crim.ca/docs/jass/latest/',
                                 None)}
