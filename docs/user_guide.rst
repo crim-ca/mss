@@ -11,13 +11,14 @@ The Multimedia Storage Service is essentially an File object store and a
 Gateway from an HTTP REST interface to Celery/AMQP interface for file
 transformation Services (e.g. transcoding).
 
-This document describes the WEB service interfaces that are common for each
-VESTA service which can be exposed by the current Service Gateway.
-
 It shows how a service can be used, the standard response types
 and how to handle exceptions.
 
 .. overview ---------------------------------------------------------------
+
+Overview
+--------
+
 See :ref:`Rest interface overview <vrp:user_guide_overview>` for general
 information on the REST interface.
 
