@@ -16,22 +16,19 @@ and how to handle exceptions.
 
 .. overview ---------------------------------------------------------------
 
-Overview
---------
-
-See :ref:`Rest interface overview <vrp:user_guide_overview>` for general
-information on the REST interface.
-
 Methods
 -------
 
 Most methods are supplied my an underlying package which offers base methods to
-control Service workers, including the basic routes required by the CANARIE
-Service API.
+control Service workers and such, including the basic routes required by the
+CANARIE Service API.
 
 The Multimedia Storage Service builds on top of these methods and offers more
 specific functionalities for it's purposes. 
 
+See :ref:`Rest interface overview <vrp:user_guide_overview>` for general
+information on the REST interface. All of the functions provided by the common
+REST interface are also available in this element but not all are useful.
 
 
 Multimedia Storage Service method sets
@@ -50,7 +47,8 @@ It covers:
 * <Base URI>/stream
 * <Base URI>/status
 
-Where *<Base URI>* will be the server root.
+Where *<Base URI>* will be the server root. Contact your instance administrator
+for mode details.
 
 
 .. _add_method:
