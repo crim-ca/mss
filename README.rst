@@ -18,7 +18,7 @@ The different functions offered by this code base are the following:
   files
 
 The documentation for this project can be found `here
-<http://services.vesta.crim.ca/docs/mss/latest/>`_ .
+<http://vesta.crim.ca/docs/mss/latest/>`_ .
 
 
 Infrastructure Overview
