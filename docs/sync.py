@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 """
 Send contents to server.
@@ -7,6 +7,7 @@ Send contents to server.
 from subprocess import check_call
 from urlparse import urljoin
 from shlex import split
+import argparse
 
 
 from conf import __version__ as VERSION
@@ -24,12 +25,12 @@ def norm_perms():
     check_call(cmd)
 
 
-def send_static(version=VERSION):
+def send_static(destination=DOC_DESTINATION):
     """
     Send static site on server.
     """
     cmd = split("rsync -av _build/html/")
-    cmd += [urljoin(DOC_DESTINATION, version)]
+    cmd += [urljoin(destination, VERSION)]
     check_call(cmd)
 
 
@@ -37,8 +38,16 @@ def main():
     """
     Command line entry point.
     """
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--destination',
+                        action='store',
+                        default=DOC_DESTINATION,
+                        help="Where the static version of the documentation "
+                             "will be sent, "
+                             "default={}".format(DOC_DESTINATION))
+    args = parser.parse_args()
     norm_perms()
-    send_static()
+    send_static(destination=args.destination)
 
 
 if __name__ == '__main__':
