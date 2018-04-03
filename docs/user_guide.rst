@@ -7,37 +7,22 @@ Multimedia Storage Service interface documentation
 Purpose
 -------
 
-The Multimedia Storage Service is essentially an File object store and a
-Gateway from an HTTP REST interface to Celery/AMQP interface for file
-transformation Services (e.g. transcoding).
+The Multimedia Storage Service is essentially an File object store and a Gateway from an HTTP REST interface to Celery/AMQP interface for file transformation Services (e.g. transcoding).
 
-It shows how a service can be used, the standard response types
-and how to handle exceptions.
+It shows how a service can be used, the standard response types and how to handle exceptions.
 
-.. overview ---------------------------------------------------------------
 
 Methods
 -------
 
-Most methods are supplied my an underlying package which offers base methods to
-control Service workers and such, including the basic routes required by the
-CANARIE Service API.
+Most methods are supplied my an underlying package which offers base methods to control Service workers and such, including the basic routes required by the CANARIE Service API.
 
-The Multimedia Storage Service builds on top of these methods and offers more
-specific functionalities for it's purposes. 
+The Multimedia Storage Service builds on top of these methods and offers more specific functionalities for it's purposes.
 
-See :ref:`Rest interface overview <vrp:user_guide_overview>` for general
-information on the REST interface. All of the functions provided by the common
-REST interface are also available in this element but not all are useful.
+See :ref:`Rest interface overview <vrp:user_guide_overview>` for general information on the REST interface. All of the functions provided by the common REST interface are also available in this element but not all are useful.
 
 
-Multimedia Storage Service method sets
-++++++++++++++++++++++++++++++++++++++
-
-The Multimedia File Storage REST interface is used to upload/download/stream
-multimedia files but also to provide a transcoding service that will generate
-documents that can be used to perform automatic annotation requests or content
-streaming.
+The Multimedia File Storage REST interface is used to upload/download/stream multimedia files but also to provide content streaming.
 
 It covers:
 
@@ -47,8 +32,7 @@ It covers:
 * <Base URI>/stream
 * <Base URI>/status
 
-Where *<Base URI>* will be the server root. Contact your instance administrator
-for mode details.
+Where *<Base URI>* will be the server root. Contact your instance administrator for mode details.
 
 
 .. _add_method:
@@ -56,11 +40,7 @@ for mode details.
 add
 ~~~
 
-To add a video to file server using one of two methods. A traditional POST can
-be performed, but it will imply an upload to the Multimedia File Storage
-service server and then a second upload to the real backend file server. A GET
-can also be performed, and the received URL will allow a direct upload to the
-file server.
+To add a video to file server using one of two methods. A traditional POST can be performed, but it will imply an upload to the Multimedia File Storage service server and then a second upload to the real backend file server. A GET can also be performed, and the received URL will allow a direct upload to the file server.
 
 
 Using GET
@@ -76,21 +56,18 @@ Parameters:
 
 Return value:
 
-The service returns a JSON structure containing a temporary «upload_url» that
-can be used to upload the document directly to the file server such as:
+The service returns a JSON structure containing a temporary «upload_url» that can be used to upload the document directly to the file server such as:
 
 .. code-block:: json
 
    {
-       "storage_doc_id": "5hEK1ToPWHVhE3Irje5KRq.avi", 
+       "storage_doc_id": "5hEK1ToPWHVhE3Irje5KRq.avi",
        "upload_url":"https://swift-qc.dair-atir.canarie.ca:8080/v1/AUTH_054956644df74c3b988ecfdb115a145c/VestaServiceStorageMultimedia/5hEK1ToPWHVhE3Irje5KRq.avi?temp_url_sig=41cbdc78cddf0418821331515871a7a61b9b2137&temp_url_expires=1410465382"
    }
 
 
 :storage_doc_id: The key to access the document from the file server.
-:upload_url: A temporary URL which is valid to upload a file using the PUT HTTP
-   method and using *content-type application/octet-stream*.
-
+:upload_url: A temporary URL which is valid to upload a file using the PUT HTTP method and using *content-type application/octet-stream*.
 
 Examples:
 
@@ -122,8 +99,7 @@ Parameters:
 
 Return value:
 
-The service returns a JSON structure containing a «doc_url» identifying the
-document on the file server:
+The service returns a JSON structure containing a «doc_url» identifying the document on the file server:
 
 .. code-block:: json
 
@@ -131,8 +107,7 @@ document on the file server:
        "storage_doc_id": "5hEK1ToPWHVhE3Irje5KRq.avi"
    }
 
-:storage_doc_id: A value which can then be used to perform other operations
-   documented throughout this documentation.
+:storage_doc_id: A value which can then be used to perform other operations documented throughout this documentation.
 
 
 Examples:
@@ -150,25 +125,22 @@ Example of requests with the curl utility:
    curl -F "file=@video.avi" <Base URI>/add
 
 
-
 delete
 ~~~~~~
 
-To delete a document. 
+To delete a document.
 
 This method uses HTTP POST.
 
 
 Parameters:
 
-:storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+:storage_doc_id: The document identifier returned by the :ref:`add method <add_method>`.
 
 
 Return value:
 
-The deletion will be done and a JSON structure indicating success will be
-returned to the request.
+The deletion will be done and a JSON structure indicating success will be returned to the request.
 
 
 Examples:
@@ -185,19 +157,17 @@ get
 
 To download a document.
 
-This method uses HTTP GET. 
+This method uses HTTP GET.
 
 
 Parameters:
 
-:storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+:storage_doc_id: The document identifier returned by the :ref:`add method <add_method>`.
 
 
 Return value:
 
-The services will redirect the request to the file server and initiate a direct
-download of the document.
+The services will redirect the request to the file server and initiate a direct download of the document.
 
 
 Examples:
@@ -214,19 +184,17 @@ stream
 
 To obtain a URL from which the video can be streamed directly.
 
-This method uses HTTP GET. 
+This method uses HTTP GET.
 
 
 Parameters:
 
-:storage_doc_id: The document identifier returned by the :ref:`add method
-   <add_method>`. 
+:storage_doc_id: The document identifier returned by the :ref:`add method <add_method>`.
 
 
 Return value:
 
-The service returns a JSON structure containing a temporary «stream_url» from
-which a video can be streamed:
+The service returns a JSON structure containing a temporary «stream_url» from which a video can be streamed:
 
 .. code-block:: json
 
