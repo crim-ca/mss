@@ -30,7 +30,6 @@ It covers:
 * <Base URI>/delete
 * <Base URI>/get
 * <Base URI>/stream
-* <Base URI>/status
 
 Where *<Base URI>* will be the server root. Contact your instance administrator for mode details.
 
