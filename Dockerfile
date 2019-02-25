@@ -4,14 +4,19 @@ MAINTAINER frederic.osterrath@crim.ca
 RUN apk update &&\
     apk add build-base\
             linux-headers\
+            openssl-dev\
+            libffi-dev\
             bash &&\
     pip install pbr==1.8.0\
+                cryptography==2.5\
                 python-keystoneclient==1.7.1\
                 python-swiftclient==2.6.0\
                 gunicorn==19.3.0 &&\
     pip install mercurial==3.4 &&\
     apk del build-base\
-            linux-headers
+            linux-headers\
+            libffi-dev\
+            openssl-dev
 
 # Thanks to a bug in pbr, this is the only way to expose its version to swift.
 ENV PBR_VERSION 1.8.0
