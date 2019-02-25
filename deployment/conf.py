@@ -13,14 +13,14 @@ found in this file, you need to set the environment variable named
 
 MY_SERVER_NAME = "vesta-mss"
 
-# Database name relative to the current application directory
-DATABASES = {
-    'Invocations': {
-        'filename': "/data/service_invocations.db",
-        'schema_filename': "../static/service_invocations_schema.sql"},
-    'Requests': {
-        'filename': "/data/requests.db",
-        'schema_filename': "../static/requests_schema.sql"}}
+MONGO_URI = "mongodb://localhost:27017/MSS"
+
+# Defines the list of indexes to be created in MongoDB
+# see http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.create_index
+MONGO_COLLECTIONS = {
+    'Invocations': [[("service",1),('datetime',-1)]],
+    'Requests': ['uuid']
+}
 
 # Change to internal volume.
 REQUEST_REGISTER_FN = "static/requests.shelve"
