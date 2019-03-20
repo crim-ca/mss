@@ -4,6 +4,13 @@
 History
 =======
 
+1.8.2
+-----
+
+* Updated VestaRestPackage to 1.9.3
+* Added MSS.SWIFT_TIMEOUT configuration variable
+
+
 1.8.1
 -----
 

@@ -31,6 +31,8 @@ SWIFT_AUTHENTIFICATION_OPTIONS = "V2_REMOTE"
 if "SWIFT_AUTHENTIFICATION_OPTIONS" in MSS_CONFIG:
     SWIFT_AUTHENTIFICATION_OPTIONS = MSS_CONFIG["SWIFT_AUTHENTIFICATION_OPTIONS"]
 
+SWIFT_TIMEOUT = MSS_CONFIG.get('SWIFT_TIMEOUT', 5)
+
 def _execute_command(cmd):
     subprocess.check_call(cmd,shell=True)
 
@@ -82,7 +84,7 @@ args = (cmd,)
 thr = threading.Thread(target=_execute_command,
                        args=args)
 thr.start()
-thr.join(timeout=5)
+thr.join(timeout=SWIFT_TIMEOUT)
 if thr.is_alive():
     msg = ('Timeout occurred renewing swift token\n{cmd}'
            .format(cmd='Command:\n{cmd}'.format(cmd=cmd)))

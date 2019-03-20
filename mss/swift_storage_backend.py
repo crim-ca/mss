@@ -46,6 +46,7 @@ if "SWIFT_AUTHENTIFICATION_OPTIONS" in MSS_CONFIG:
 
 SWIFT_REDIRECT_URL = MSS_CONFIG.get('SWIFT_REDIRECT_URL', None)
 
+SWIFT_TIMEOUT = MSS_CONFIG.get('SWIFT_TIMEOUT', 5)
 
 class SwiftToken(object):
     """
@@ -148,7 +149,7 @@ class SwiftStorageBackend(AbstractStorageBackend):
         thr = threading.Thread(target=self.__async_renew_swift_token,
                                args=args)
         thr.start()
-        thr.join(timeout=5)
+        thr.join(timeout=SWIFT_TIMEOUT)
         if thr.is_alive():
             msg = ('Timeout occurred renewing swift token\n{cmd}'
                    .format(cmd='Command:\n{cmd}'.format(cmd=cmd)))
